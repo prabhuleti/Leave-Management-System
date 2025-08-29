@@ -1,7 +1,6 @@
 package com.sutherland.lms.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,8 +31,8 @@ public class LeaveRequestController {
 		return new ResponseEntity<LeaveRequest>(mesg,HttpStatus.OK);
 	}
 	@GetMapping("/checkleaverequeststatus/{id}")
-	public ResponseEntity<Optional<LeaveRequest>> checkLeaveRequestStatus(@PathVariable long id) {
-	   return new ResponseEntity<Optional<LeaveRequest>>(service.checkLeaveRequestStatus(id),HttpStatus.OK);		   
+	public ResponseEntity<LeaveRequest> checkLeaveRequestStatus(@PathVariable long id) {
+	   return new ResponseEntity<LeaveRequest>(service.checkLeaveRequestStatus(id),HttpStatus.OK);		   
 	}
     @PostMapping("/canceleave/{id}")
     public ResponseEntity<LeaveRequest> cancelLeave(@PathVariable long id){

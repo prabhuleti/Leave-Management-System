@@ -8,38 +8,83 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sutherland.lms.entity.Employee;
 import com.sutherland.lms.entity.LeaveRequest;
+import com.sutherland.lms.exceptions.BadRequestException;
+import com.sutherland.lms.exceptions.DateRequiredException;
+import com.sutherland.lms.exceptions.EmployeeNotFoundException;
+import com.sutherland.lms.exceptions.LeaveRequestNotFoundException;
+import com.sutherland.lms.exceptions.ManagerNotAssignedException;
+import com.sutherland.lms.exceptions.NoLeavesFoundException;
+import com.sutherland.lms.exceptions.RemarksNeededForRejectionException;
+import com.sutherland.lms.repo.EmployeeRepository;
 import com.sutherland.lms.repo.LeaveRequestRepository;
 
 @Service
 public class LeaveRequestServiceImplementation implements LeaveRequestService{
 	@Autowired
 	LeaveRequestRepository repo;
+	@Autowired
+	EmployeeRepository rep;
 
 	@Override
-	public int applyLeave(LeaveRequest leaveRequest) {
-//		exceptions
+	public void applyLeave(LeaveRequest leaveRequest) {	
+		if(!rep.existsByEmpId(leaveRequest.getEmpId())) {
+			throw new EmployeeNotFoundException("employee not found");
+		}
+		Employee emp=rep.findById(leaveRequest.getEmpId()).get();
+		String managerId=emp.getMangerId();
+		if(managerId==null || managerId.isBlank()) {
+			throw new ManagerNotAssignedException("Manager not assigned");
+		}
+		leaveRequest.setManagerId(managerId);
+		if(leaveRequest.getFromDate()==null|| leaveRequest.getToDate()==null) {
+			throw new DateRequiredException("Both fromdate and todate is required");
+		}
 		long numberOfDays = ChronoUnit.DAYS.between(leaveRequest.getFromDate(), leaveRequest.getToDate()) + 1;
 		leaveRequest.setNumberOfDays(numberOfDays);
 		leaveRequest.setDateApplied(LocalDate.now());
 		leaveRequest.setLeaveStatus("APPLIED");
+		leaveRequest.getId();	
 		repo.save(leaveRequest);
-		return leaveRequest.getId();	
+			
 	}
 
 	@Override
 	public LeaveRequest verifyLeave(long id, String action, String remarks) {
 		Optional<LeaveRequest> optional=repo.findById(id);
+		if(!optional.isPresent()) {
+			throw new LeaveRequestNotFoundException("leave request not found with id");
+		}
 		LeaveRequest leaveRequest=optional.get();
-		leaveRequest.setLeaveStatus(action);
-		leaveRequest.setRemarks(remarks);
+		if(!"APPLIED".equalsIgnoreCase(leaveRequest.getLeaveStatus())) {
+			throw new BadRequestException("only applied leave requests can be verified");
+		}
+		String takeAction=action.trim().toUpperCase();
+		if("APPROVE".equals(takeAction)) {
+			leaveRequest.setLeaveStatus("APPROVED");
+			leaveRequest.setRemarks(remarks != null && !remarks.isBlank() ? remarks:"Approved by manager");
+		}else if("REJECT".equals(takeAction)) {
+			if(remarks==null || remarks.isBlank()) {
+				throw new RemarksNeededForRejectionException("reason for rejection");
+			}
+			leaveRequest.setLeaveStatus("REJECTED");
+		}else {
+			throw new BadRequestException("invalid action:"+ action);
+		}
 		return repo.save(leaveRequest);
 	}
 
 	@Override
 	public LeaveRequest cancelLeave(long id) {
 		Optional<LeaveRequest> optional=repo.findById(id);
+		if(!optional.isPresent()) {
+			throw new LeaveRequestNotFoundException("leave request not found");
+		}
 		LeaveRequest leaveRequest=optional.get();
+		if(!"APPROVED".equalsIgnoreCase(leaveRequest.getLeaveStatus())) {
+			throw new BadRequestException("only approved leave requests can be cancelled");
+		}
 		leaveRequest.setLeaveStatus("CANCELLED");
 		return repo.save(leaveRequest);
 	}
@@ -47,19 +92,37 @@ public class LeaveRequestServiceImplementation implements LeaveRequestService{
 	@Override
 	public LeaveRequest withdrawLeave(long id) {
 		Optional<LeaveRequest> optional=repo.findById(id);
+		if(!optional.isPresent()) {
+			throw new LeaveRequestNotFoundException("leave request not found");
+		}
 		LeaveRequest leaveRequest=optional.get();
+		if(!"APPLIED".equalsIgnoreCase(leaveRequest.getLeaveStatus())) {
+			throw new BadRequestException("only applied leave requests can be withdrawn");
+		}
 		leaveRequest.setLeaveStatus("WITHDRAWN");
 		return repo.save(leaveRequest);
 	}
 
 	@Override
-	public Optional<LeaveRequest> checkLeaveRequestStatus(long id) {	
-		return repo.findById(id);
+	public LeaveRequest checkLeaveRequestStatus(long id) {
+		Optional<LeaveRequest> optional=repo.findById(id);
+		if(!optional.isPresent()) {
+			throw new LeaveRequestNotFoundException("leave request not found");
+		}
+		
+		return optional.get();
 	}
 
 
 	@Override
 	public List<LeaveRequest> getAllLeaveRequest(String empID) {
+		if(!rep.existsByEmpId(empID)) {
+			throw new EmployeeNotFoundException("employee not found");
+		}
+		List<LeaveRequest> leaves=repo.findByEmpId(empID);
+		if(leaves.isEmpty()) {
+			throw new NoLeavesFoundException("no leave requests found for employee");
+		}
 		return repo.findAll();
 	}
 

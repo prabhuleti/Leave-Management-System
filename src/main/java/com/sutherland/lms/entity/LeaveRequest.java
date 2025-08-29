@@ -70,8 +70,8 @@ public class LeaveRequest {
 	public long getNumberOfDays() {
 		return numberOfDays;
 	}
-	public void setNumberOfDays(long numberOfDays2) {
-		this.numberOfDays = numberOfDays2;
+	public void setNumberOfDays(long numberOfDays) {
+		this.numberOfDays = numberOfDays;
 	}
 	public LocalDate getDateApplied() {
 		return dateApplied;
