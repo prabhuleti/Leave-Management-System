@@ -13,18 +13,18 @@ public class LeaveRequest {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
-	@Column
+	@Column(length=10)
 	private String empId;
-	@Column
+	@Column(length=10)
 	private String managerId;
-	@Column
+	@Column(length=10)
 	private LocalDate fromDate;
-	@Column
+	@Column(length=10)
 	private LocalDate toDate;
-	@Column
+	@Column(length=20)
 	private String leaveType;
-	@Column
-	private int numberOfDays;
+	@Column(length=20)
+	private long numberOfDays;
 	@Column
 	private LocalDate dateApplied;
 	@Column
@@ -67,11 +67,11 @@ public class LeaveRequest {
 	public void setLeaveType(String leaveType) {
 		this.leaveType = leaveType;
 	}
-	public int getNumberOfDays() {
+	public long getNumberOfDays() {
 		return numberOfDays;
 	}
-	public void setNumberOfDays(int numberOfDays) {
-		this.numberOfDays = numberOfDays;
+	public void setNumberOfDays(long numberOfDays2) {
+		this.numberOfDays = numberOfDays2;
 	}
 	public LocalDate getDateApplied() {
 		return dateApplied;

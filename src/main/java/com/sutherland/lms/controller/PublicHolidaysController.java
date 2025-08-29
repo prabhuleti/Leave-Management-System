@@ -23,7 +23,7 @@ public class PublicHolidaysController {
 		PublicHolidays holiday= service.addHolidayDetails(holidays);
 		return new ResponseEntity<PublicHolidays>(holiday,HttpStatus.OK);
 	}
-	@GetMapping("/viewholidaylist ")
+	@GetMapping("/viewholidaylist")
 	public ResponseEntity<List<PublicHolidays>> viewHolidayDetails(){
 		return new ResponseEntity<List<PublicHolidays>>(service.viewHolidayList(), HttpStatus.OK);		
 	}

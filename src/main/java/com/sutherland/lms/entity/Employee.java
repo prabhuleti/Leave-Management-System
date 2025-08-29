@@ -17,9 +17,9 @@ public class Employee {
 	private String job;
 	@Column(length=10)
 	private String mobile;
-	@Column(length=20)
+	@Column(length=40)
 	private String email;
-	@Column
+	@Column(length=10)
 	private String mangerId;
 	public String getEmpId() {
 		return empId;

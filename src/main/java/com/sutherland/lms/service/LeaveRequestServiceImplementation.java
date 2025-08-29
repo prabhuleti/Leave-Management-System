@@ -1,6 +1,7 @@
 package com.sutherland.lms.service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,8 +18,9 @@ public class LeaveRequestServiceImplementation implements LeaveRequestService{
 
 	@Override
 	public int applyLeave(LeaveRequest leaveRequest) {
-//		number of days should be added 
 //		exceptions
+		long numberOfDays = ChronoUnit.DAYS.between(leaveRequest.getFromDate(), leaveRequest.getToDate()) + 1;
+		leaveRequest.setNumberOfDays(numberOfDays);
 		leaveRequest.setDateApplied(LocalDate.now());
 		leaveRequest.setLeaveStatus("APPLIED");
 		repo.save(leaveRequest);
@@ -26,7 +28,7 @@ public class LeaveRequestServiceImplementation implements LeaveRequestService{
 	}
 
 	@Override
-	public LeaveRequest verifyLeave(long id, String mangerId, String action, String remarks) {
+	public LeaveRequest verifyLeave(long id, String action, String remarks) {
 		Optional<LeaveRequest> optional=repo.findById(id);
 		LeaveRequest leaveRequest=optional.get();
 		leaveRequest.setLeaveStatus(action);
@@ -35,7 +37,7 @@ public class LeaveRequestServiceImplementation implements LeaveRequestService{
 	}
 
 	@Override
-	public LeaveRequest cancelLeave(long id, String empId) {
+	public LeaveRequest cancelLeave(long id) {
 		Optional<LeaveRequest> optional=repo.findById(id);
 		LeaveRequest leaveRequest=optional.get();
 		leaveRequest.setLeaveStatus("CANCELLED");
@@ -43,7 +45,7 @@ public class LeaveRequestServiceImplementation implements LeaveRequestService{
 	}
 
 	@Override
-	public LeaveRequest withdrawLeave(long id, String empId) {
+	public LeaveRequest withdrawLeave(long id) {
 		Optional<LeaveRequest> optional=repo.findById(id);
 		LeaveRequest leaveRequest=optional.get();
 		leaveRequest.setLeaveStatus("WITHDRAWN");
@@ -55,9 +57,10 @@ public class LeaveRequestServiceImplementation implements LeaveRequestService{
 		return repo.findById(id);
 	}
 
+
 	@Override
-	public List<LeaveRequest> getAllLeavesByEmployee() {	
-		return repo.findByEmpId();
+	public List<LeaveRequest> getAllLeaveRequest(String empID) {
+		return repo.findAll();
 	}
 
 }

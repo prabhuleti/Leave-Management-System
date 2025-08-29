@@ -14,7 +14,7 @@ public class PublicHolidays {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
 	@Column
-	private LocalDate date;
+	private LocalDate holidayDate;
 	@Column
 	private String holidayDetails;
 	public long getId() {
@@ -24,10 +24,10 @@ public class PublicHolidays {
 		this.id = id;
 	}
 	public LocalDate getDate() {
-		return date;
+		return holidayDate;
 	}
-	public void setDate(LocalDate date) {
-		this.date = date;
+	public void setDate(LocalDate holidayDate) {
+		this.holidayDate = holidayDate;
 	}
 	public String getHolidayDetails() {
 		return holidayDetails;
