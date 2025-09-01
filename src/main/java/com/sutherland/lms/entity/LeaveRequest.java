@@ -7,15 +7,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 public class LeaveRequest {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private int id;
-	@Column(length=10)
-	private String empId;
-	@Column(length=10)
+	@ManyToOne
+	@JoinColumn(name="empId", referencedColumnName = "empId")
+	private Employee employee;
+	@Column
 	private String managerId;
 	@Column(length=10)
 	private LocalDate fromDate;
@@ -37,11 +40,11 @@ public class LeaveRequest {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getEmpId() {
-		return empId;
+	public Employee getEmpId() {
+		return employee;
 	}
-	public void setEmpId(String empId) {
-		this.empId = empId;
+	public void setEmpId(Employee empId) {
+		this.employee = empId;
 	}
 	public String getManagerId() {
 		return managerId;
@@ -91,5 +94,6 @@ public class LeaveRequest {
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+
 
 }

@@ -20,7 +20,7 @@ public class Employee {
 	@Column(length=40)
 	private String email;
 	@Column(length=10)
-	private String mangerId;
+	private String managerId;
 	public String getEmpId() {
 		return empId;
 	}
@@ -57,11 +57,16 @@ public class Employee {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getMangerId() {
-		return mangerId;
+	public String getManagerId() {
+		return managerId;
 	}
-	public void setMangerId(String mangerId) {
-		this.mangerId = mangerId;
+	public void setManagerId(String managerId) {
+		this.managerId = managerId;
+	}
+	@Override
+	public String toString() {
+		return "Employee [empId=" + empId + ", firstName=" + firstName + ", lastName=" + lastName + ", job=" + job
+				+ ", mobile=" + mobile + ", email=" + email + ", managerId=" + managerId + "]";
 	}
 	
 	

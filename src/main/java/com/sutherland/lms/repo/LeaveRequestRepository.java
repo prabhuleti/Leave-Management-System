@@ -11,6 +11,6 @@ import com.sutherland.lms.entity.LeaveRequest;
 
 @Repository
 public interface LeaveRequestRepository extends JpaRepository<LeaveRequest, Long>{
-	List<LeaveRequest> findByEmpId(String empId);
+	List<LeaveRequest> findByEmployee_EmpId(String empId);
 
 }

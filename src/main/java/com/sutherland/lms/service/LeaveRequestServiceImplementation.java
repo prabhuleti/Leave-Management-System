@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.sutherland.lms.dto.LeaveRequestDto;
 import com.sutherland.lms.entity.Employee;
 import com.sutherland.lms.entity.LeaveRequest;
 import com.sutherland.lms.exceptions.BadRequestException;
@@ -28,24 +29,30 @@ public class LeaveRequestServiceImplementation implements LeaveRequestService{
 	EmployeeRepository rep;
 
 	@Override
-	public void applyLeave(LeaveRequest leaveRequest) {	
-		if(!rep.existsByEmpId(leaveRequest.getEmpId())) {
+	public void applyLeave(LeaveRequestDto leaveRequestDto) {	
+		if(!rep.existsByEmpId(leaveRequestDto.getEmpId())) {
 			throw new EmployeeNotFoundException("employee not found");
 		}
-		Employee emp=rep.findById(leaveRequest.getEmpId()).get();
-		String managerId=emp.getMangerId();
+		Employee emp=rep.findById(leaveRequestDto.getEmpId()).get();
+		String managerId=emp.getManagerId();
 		if(managerId==null || managerId.isBlank()) {
 			throw new ManagerNotAssignedException("Manager not assigned");
 		}
-		leaveRequest.setManagerId(managerId);
-		if(leaveRequest.getFromDate()==null|| leaveRequest.getToDate()==null) {
+		leaveRequestDto.setManagerId(managerId);
+		if(leaveRequestDto.getFromDate()==null|| leaveRequestDto.getToDate()==null) {
 			throw new DateRequiredException("Both fromdate and todate is required");
 		}
-		long numberOfDays = ChronoUnit.DAYS.between(leaveRequest.getFromDate(), leaveRequest.getToDate()) + 1;
-		leaveRequest.setNumberOfDays(numberOfDays);
-		leaveRequest.setDateApplied(LocalDate.now());
-		leaveRequest.setLeaveStatus("APPLIED");
-		leaveRequest.getId();	
+		long numberOfDays = ChronoUnit.DAYS.between(leaveRequestDto.getFromDate(), leaveRequestDto.getToDate()) + 1;
+		LeaveRequest leaveRequest = new LeaveRequest();
+		leaveRequest.setEmpId(emp);
+	    leaveRequest.setManagerId(emp.getManagerId());
+	    leaveRequest.setFromDate(leaveRequestDto.getFromDate());
+	    leaveRequest.setToDate(leaveRequestDto.getToDate());
+	    leaveRequest.setLeaveType(leaveRequestDto.getLeaveType());
+	        
+	    leaveRequest.setNumberOfDays((int) numberOfDays);
+	    leaveRequest.setDateApplied(LocalDate.now());
+	    leaveRequest.setLeaveStatus("APPLIED");	
 		repo.save(leaveRequest);
 			
 	}
@@ -115,15 +122,8 @@ public class LeaveRequestServiceImplementation implements LeaveRequestService{
 
 
 	@Override
-	public List<LeaveRequest> getAllLeaveRequest(String empID) {
-		if(!rep.existsByEmpId(empID)) {
-			throw new EmployeeNotFoundException("employee not found");
-		}
-		List<LeaveRequest> leaves=repo.findByEmpId(empID);
-		if(leaves.isEmpty()) {
-			throw new NoLeavesFoundException("no leave requests found for employee");
-		}
-		return repo.findAll();
+	public List<LeaveRequest>getLeaveRequestByEmpId(String empId) {
+		 return repo.findByEmployee_EmpId(empId);
 	}
 
 }

@@ -35,4 +35,8 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> RemarsksNeededForRejection(RemarksNeededForRejectionException ex){
 		return new ResponseEntity<String>(ex.getMessage(),HttpStatus.FOUND);
 	}
+	@ExceptionHandler(value=UserNotFoundException.class)
+	public ResponseEntity<String> RemarsksNeededForRejection(UserNotFoundException ex){
+		return new ResponseEntity<String>(ex.getMessage(),HttpStatus.FOUND);
+	}
 }

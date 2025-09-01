@@ -8,6 +8,7 @@ public class LeaveManagementSystemApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(LeaveManagementSystemApplication.class, args);
+		System.out.println("helloooo");
 	}
 
 }

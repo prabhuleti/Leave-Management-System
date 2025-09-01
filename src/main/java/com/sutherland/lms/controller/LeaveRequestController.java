@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,16 +13,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.sutherland.lms.dto.LeaveRequestDto;
 import com.sutherland.lms.entity.LeaveRequest;
 import com.sutherland.lms.service.LeaveRequestService;
 
 @RestController
 @RequestMapping("/leaverequest")
+@CrossOrigin(origins = "http://localhost:3000")
 public class LeaveRequestController {
 	@Autowired
 	LeaveRequestService service;
 	@PostMapping("/applyleaverequest")
-	public ResponseEntity<String> applyLeave(@RequestBody LeaveRequest leaveRequest){
+	public ResponseEntity<String> applyLeave(@RequestBody LeaveRequestDto leaveRequest){
 		service.applyLeave(leaveRequest);
 		return new ResponseEntity<String>(HttpStatus.OK);
 	}
@@ -46,6 +50,6 @@ public class LeaveRequestController {
     }
     @GetMapping("/viewleavehistory/{empId}")
     public ResponseEntity<List<LeaveRequest>> getAllLeavesByEmployee(@PathVariable String empId){
-    	return new ResponseEntity<List<LeaveRequest>>(service.getAllLeaveRequest(empId),HttpStatus.OK);
+    	return new ResponseEntity<List<LeaveRequest>>(service.getLeaveRequestByEmpId(empId),HttpStatus.OK);
     }
 }
